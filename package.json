@@ -15,5 +15,8 @@
     "url": "git+https://github.com/prontojs/pronto.git"
   },
   "author": "youfoundKim",
-  "license": "Apache License 2.0"
+  "license": "Apache License 2.0",
+  "dependencies": {
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.20.0"
+  }
 }
