@@ -1,0 +1,19 @@
+{
+  "name": "@prontojs/pronto",
+  "version": "0.0.1",
+  "description": "WIP - Node.js Web Server",
+  "type": "module",
+  "main": "index.js",
+  "keywords": [
+    "fast",
+    "http",
+    "server"
+  ],
+  "homepage": "https://github.com/prontojs/pronto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prontojs/pronto.git"
+  },
+  "author": "youfoundKim",
+  "license": "Apache License 2.0"
+}
