@@ -6,6 +6,6 @@ server.get("/", (ctx) => {
   return ctx.end("Hello, world!");
 });
 
-server.listen(3000, () => {
-  console.log("ok");
+server.listen(3000, (socket) => {
+  console.log("http://localhost:3000");
 });

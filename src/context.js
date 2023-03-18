@@ -5,11 +5,7 @@ export default class Context {
     this.res = res;
     this.req = req;
 
-    this.aborted = false;
 
-    this.res.onAborted(() => {
-      this.aborted = true;
-    });
   }
 
   get ip() {
@@ -35,13 +31,13 @@ export default class Context {
   }
 
   write(chunk) {
+
+
     return this.res.write(chunk);
   }
 
   end(body, closeConnection) {
-    if (this.aborted) {
-      return;
-    }
+
     
     this.res.end(body, closeConnection);
 
