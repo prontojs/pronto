@@ -51,6 +51,12 @@ export default class Context {
     return this;
   }
 
+  cork(cb) {
+    this.res.cork(cb);
+
+    return this;
+  }
+
   json(obj) {
     const json = JSON.stringify(obj);
 
