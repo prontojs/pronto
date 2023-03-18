@@ -1,3 +1,5 @@
+const decoder = new TextDecoder();
+
 export default class Response {
   constructor(response) {
     this.response = response;
@@ -5,15 +7,9 @@ export default class Response {
   }
 
   get ip() {
-    return this.response.getRemoteAddressAsText();
-  }
+    const arrayBuffer = this.response.getRemoteAddressAsText();
 
-  resume() {
-    return this.response.resume();
-  }
-
-  pause() {
-    return this.response.pause();
+    return decoder.decode(arrayBuffer);
   }
 
   close() {
@@ -26,6 +22,14 @@ export default class Response {
     this.response.cork(cb);
 
     return this;
+  }
+
+  resume() {
+    return this.response.resume();
+  }
+
+  pause() {
+    return this.response.pause();
   }
 
   write(chunk) {
@@ -56,10 +60,5 @@ export default class Response {
     return this
       .header("Content-Type", "application/json")
       .end(json);
-  }
-
-  upgrade() {
-
-    return this.response.upgrade(userData, secWebSocketKey, secWebSocketProtocol, secWebSocketExtensions)
   }
 }

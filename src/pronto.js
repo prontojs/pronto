@@ -1,7 +1,5 @@
 import uws from "uWebSockets.js";
-
-import Request from "./request.js";
-import Response from "./response.js";
+import Context from "./context.js";
 
 export default class Pronto {
   constructor(options) {
@@ -115,17 +113,16 @@ export default class Pronto {
 // creates a chain of handlers
 function createHandlerChain(handlers) {
   // the final function that uWS calls
-  return function (response, request) {
+  return function (res, req) {
     let index = 0;
 
-    const req = new Request(request);
-    const res = new Response(response);
+    const ctx = new Context(res, req);
 
     function next() {
       // get handler
       const handler = handlers[index++];
       // execute
-      handler(req, res, next);
+      handler(ctx, next);
     }
 
     next();
