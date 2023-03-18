@@ -6,6 +6,18 @@ export default class Pronto {
     this.middleware = [];
   }
 
+  listen(port, cb) {
+    this.uws.listen(port, cb);
+  }
+
+  close() {
+    //uws.us_listen_socket_close(listenSocket);
+  }
+
+  ws(pattern, behavior) {
+    this.uws.ws(pattern, behavior);
+  }
+
   use(pattern, ...middleware) {
     middleware.forEach((middleware) => {
       this.middleware.push({
@@ -13,6 +25,8 @@ export default class Pronto {
         handler: middleware
       });
     });
+
+    return this;
   }
 
   add(method, pattern, handlers) {
@@ -34,8 +48,44 @@ export default class Pronto {
     return this;
   }
 
+  any(pattern, ...handlers) {
+    this.add("any", pattern, handlers);
+
+    return this;
+  }
+
+  connect(pattern, ...handlers) {
+    this.add("connect", pattern, handlers);
+
+    return this;
+  }
+
+  del(pattern, ...handlers) {
+    this.add("del", pattern, handlers);
+
+    return this;
+  }
+
   get(pattern, ...handlers) {
     this.add("get", pattern, handlers);
+
+    return this;
+  }
+
+  head(pattern, ...handlers) {
+    this.add("head", pattern, handlers);
+
+    return this;
+  }
+
+  options(pattern, ...handlers) {
+    this.add("options", pattern, handlers);
+
+    return this;
+  }
+
+  patch(pattern, ...handlers) {
+    this.add("patch", pattern, handlers);
 
     return this;
   }
@@ -46,12 +96,16 @@ export default class Pronto {
     return this;
   }
 
-  listen(port, cb) {
-    this.uws.listen(port, cb);
+  put(pattern, ...handlers) {
+    this.add("put", pattern, handlers);
+
+    return this;
   }
 
-  close() {
-    //uws.us_listen_socket_close(listenSocket);
+  trace(pattern, ...handlers) {
+    this.add("trace", pattern, handlers);
+
+    return this;
   }
 }
 
