@@ -11,26 +11,46 @@ export default class Context {
     });
   }
 
-  get ip() {
-    const arrayBuffer = this.response.getRemoteAddressAsText();
-
-    return decoder.decode(arrayBuffer);
-  }
-
   get method() {
     return this.req.getMethod();
   }
 
-  get url() {
+  get path() {
     return this.req.getUrl();
   }
 
-  set yield(val) {
-    return this.req.setYield(val);
+  get querystring() {
+    return this.req.getQuery();
   }
 
-  close() {
-    return this.res.close();
+  get ip() {
+    const arrayBuffer = this.res.getRemoteAddressAsText();
+
+    return decoder.decode(arrayBuffer);
+  }
+
+  getHeader(key) {
+    return this.req.getHeader(key);
+  }
+
+  getQuery(key) {
+    return this.req.getQuery(key);
+  }
+
+  getParameter(index) {
+    return this.req.getParameter(index);
+  }
+
+  writeHeader(key, value) {
+    this.res.writeHeader(key, value);
+
+    return this;
+  }
+
+  writeStatus(status) {
+    this.res.writeStatus(status);
+
+    return this;
   }
 
   write(chunk) {
@@ -65,15 +85,15 @@ export default class Context {
       .end(json);
   }
 
-  header(key, value) {
-    this.res.writeHeader(key, value);
-
-    return this;
+  resume() {
+    return this.res.resume();
   }
 
-  status(status) {
-    this.res.writeStatus(status);
+  pause() {
+    return this.res.pause();
+  }
 
-    return this;
+  close() {
+    return this.res.close();
   }
 }

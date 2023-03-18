@@ -2,8 +2,10 @@ import Pronto from "../index.js";
 
 const server = new Pronto();
 
-server.get("/", (ctx) => {
-  ctx.end("Hello, world!");
+// path params are zero indexed
+server.get("/:name", (ctx) => {
+  const name = ctx.getParameter(0);
+  ctx.end(`Hello, ${name}!`);
 });
 
 server.listen(3000, () => {

@@ -22,6 +22,6 @@ server.get("/", (ctx, next) => {
   ctx.end(", world!");
 });
 
-server.listen(3000, (socket) => {
+server.listen(3000, () => {
   console.log("http://localhost:3000");
 });
