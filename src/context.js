@@ -2,31 +2,26 @@ const decoder = new TextDecoder();
 
 export default class Context {
   constructor(res, req) {
+    // uws response and request
     this.res = res;
     this.req = req;
 
+    // track aborted
     this.aborted = false;
     this.res.onAborted(() => {
       this.aborted = true;
     });
+
+    this.status = "200 OK";
+    this.headers = new Map();
   }
 
-  get method() {
+  getMethod() {
     return this.req.getMethod();
   }
 
-  get path() {
+  getUrl() {
     return this.req.getUrl();
-  }
-
-  get querystring() {
-    return this.req.getQuery();
-  }
-
-  get ip() {
-    const arrayBuffer = this.res.getRemoteAddressAsText();
-
-    return decoder.decode(arrayBuffer);
   }
 
   getHeader(key) {
@@ -41,48 +36,43 @@ export default class Context {
     return this.req.getParameter(index);
   }
 
-  writeHeader(key, value) {
-    this.res.writeHeader(key, value);
+  getRemoteAddress() {
+    const arrayBuffer = this.res.getRemoteAddressAsText();
+
+    return decoder.decode(arrayBuffer);
+  }
+
+  setHeader(key, value) {
+    this.headers.set(key, value);
 
     return this;
   }
 
-  writeStatus(status) {
-    this.res.writeStatus(status);
+  setStatus(status) {
+    this.status = status;
 
     return this;
   }
 
-  write(chunk) {
-    if (this.aborted) {
-      return;
-    }
+  send(body) {
+    this.res.cork(() => {
+      this.res.writeStatus(this.status);
 
-    return this.res.write(chunk);
-  }
+      for (const [key, value] of this.headers) {
+        this.res.writeHeader(key, value);
+      }
 
-  end(body, closeConnection) {
-    if (this.aborted) {
-      return;
-    }
-    
-    this.res.end(body, closeConnection);
-
-    return this;
-  }
-
-  cork(cb) {
-    this.res.cork(cb);
-
-    return this;
+      this.res.end(body);
+    });
   }
 
   json(obj) {
     const json = JSON.stringify(obj);
 
-    return this
-      .header("Content-Type", "application/json")
-      .end(json);
+    this.res.cork(() => {
+      this.res.writeHeader("Content-Type", "application/json");
+      this.res.end(json);
+    });
   }
 
   resume() {
