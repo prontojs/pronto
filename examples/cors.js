@@ -2,32 +2,26 @@ import Pronto from "../index.js";
 
 const server = new Pronto();
 
-server.get("/", (ctx) => {
-  ctx.end("Hello, world!");
+// preflight
+server.options("/*", (ctx) => {
+  ctx.writeStatus("204 No Content");
+
+  ctx.writeHeader("Access-Control-Allow-Origin", "*");
+  ctx.writeHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  ctx.writeHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH");
+  ctx.writeHeader("Access-Control-Max-Age", "86400");
+
+  ctx.end();
 });
 
-server.post("/", (ctx) => {
-  ctx.writeHeader("test", "test");
-  ctx.writeStatus("201 Created");
-  ctx.end("Hello, from POST handler!");
+server.get("/", (ctx) => {
+  ctx.writeStatus("200 OK");
+
+  ctx.writeHeader("Access-Control-Allow-Origin", "*");
+
+  ctx.end("Hello, world!");
 });
 
 server.listen(3000, () => {
   console.log("http://localhost:3000");
 });
-
-function cors(options) {
-  return function(ctx, next) {
-    ctx.writeHeader("Access-Control-Allow-Origin", options.origin);
-    console.log("ye");
-
-    if (ctx.method == "options") {
-      ctx.writeHeader("Access-Control-Allow-Headers", options.headers);
-      ctx.writeStatus("204");
-      ctx.end();
-      return;
-    }
-
-    next();
-  }
-}

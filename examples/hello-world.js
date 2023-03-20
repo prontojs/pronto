@@ -3,7 +3,7 @@ import Pronto from "../index.js";
 const server = new Pronto();
 
 server.get("/", (ctx) => {
-  ctx.send("Hello, world!");
+  ctx.end("Hello, world!");
 });
 
 server.listen(3000, () => {

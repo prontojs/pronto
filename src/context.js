@@ -1,23 +1,20 @@
-const decoder = new TextDecoder();
-
 export default class Context {
   constructor(res, req) {
-    // uws response and request
     this.res = res;
     this.req = req;
-
-    // track aborted
     this.aborted = false;
-    this.res.onAborted(() => {
-      this.aborted = true;
-    });
+  }
 
-    this.status = "200 OK";
-    this.headers = new Map();
+  setYield(y) {
+    return this.req.setYield(y);
   }
 
   getMethod() {
     return this.req.getMethod();
+  }
+
+  getCaseSensitiveMethod() {
+    return this.req.getCaseSensitiveMethod();
   }
 
   getUrl() {
@@ -28,6 +25,10 @@ export default class Context {
     return this.req.getHeader(key);
   }
 
+  forEachHeader(cb) {
+    return this.req.forEach(cb);
+  }
+
   getQuery(key) {
     return this.req.getQuery(key);
   }
@@ -36,54 +37,114 @@ export default class Context {
     return this.req.getParameter(index);
   }
 
+  getProxiedRemoteAddress() {
+    return this.res.getProxiedRemoteAddress();
+  }
+
+  getProxiedRemoteAddressAsText() {
+    return this.res.getProxiedRemoteAddressAsText();
+  }
+
   getRemoteAddress() {
-    const arrayBuffer = this.res.getRemoteAddressAsText();
-
-    return decoder.decode(arrayBuffer);
+    return this.res.getRemoteAddress();
   }
 
-  setHeader(key, value) {
-    this.headers.set(key, value);
+  getRemoteAddressAsText() {
+    return this.res.getRemoteAddressAsText();
+  }
+
+  getWriteOffset() {
+    return this.res.getWriteOffset();
+  }
+
+  onAborted(handler) {
+    this.res.onAborted(handler);
 
     return this;
   }
 
-  setStatus(status) {
-    this.status = status;
+  onData(handler) {
+    this.res.onData(handler);
 
     return this;
   }
 
-  send(body) {
-    this.res.cork(() => {
-      this.res.writeStatus(this.status);
+  onWritable(handler) {
+    this.res.onWritable(handler);
 
-      for (const [key, value] of this.headers) {
-        this.res.writeHeader(key, value);
-      }
+    return this;
+  }
 
-      this.res.end(body);
+  trackAbort() {
+    this.res.onAborted(() => {
+      this.aborted = true;
     });
+
+    return this;
+  }
+
+  cork(cb) {
+    this.res.cork(cb);
+
+    return this;
+  }
+
+  writeStatus(status) {
+    this.res.writeStatus(status);
+
+    return this;
+  }
+
+  writeHeader(key, value) {
+    this.res.writeHeader(key, value);
+
+    return this;
+  }
+
+  write(chunk) {
+    return this.res.write(chunk);
+  }
+
+  end(body, closeConnection) {
+    this.res.end(body, closeConnection);
+
+    return this;
+  }
+
+  tryEnd(fullBodyOrChunk, totalSize) {
+    return this.res.tryEnd(fullBodyOrChunk, totalSize);
   }
 
   json(obj) {
-    const json = JSON.stringify(obj);
+    const str = JSON.stringify(obj);
+    this.res.writeHeader("Content-Type", "application/json");
+    this.res.end(str);
 
-    this.res.cork(() => {
-      this.res.writeHeader("Content-Type", "application/json");
-      this.res.end(json);
-    });
+    return this;
+  }
+
+  html(str) {
+    this.res.writeHeader("Content-Type", "text/html; charset=utf-8");
+    this.res.end(str);
+
+    return this;
+  }
+
+  upgrade(userData, secWebSocketKey, secWebSocketProtocol, secWebSocketExtensions, context) {
+    this.res.upgrade(userData, secWebSocketKey, secWebSocketProtocol, secWebSocketExtensions, context);
   }
 
   resume() {
-    return this.res.resume();
+    this.res.resume();
   }
 
   pause() {
-    return this.res.pause();
+    this.res.pause();
   }
 
   close() {
-    return this.res.close();
+    this.res.close();
+
+    return this;
   }
 }

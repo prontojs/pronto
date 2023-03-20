@@ -2,19 +2,20 @@ import Pronto from "../index.js";
 
 const server = new Pronto();
 
-// Middleware 1
+// middleware 1
 server.use("/", (ctx, next) => {
-  ctx.header("Test-Header-1", "Middleware 1");
+  ctx.writeStatus("200 OK");
+  ctx.writeHeader("Middleware-1", "Hello from Middleware 1");
   next();
 });
 
-// Middleware 2
+// middleware 2
 server.use("/", (ctx, next) => {
-  ctx.header("Test-Header-2", "Middleware 2");
+  ctx.writeHeader("Middleware-2", "Hello from Middleware 2");
   next();
 });
 
-// Add two handlers
+// add as many handlers as you want
 server.get("/", (ctx, next) => {
   ctx.write("Hello");
   next();
